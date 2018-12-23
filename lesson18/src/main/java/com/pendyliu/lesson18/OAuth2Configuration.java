@@ -1,6 +1,5 @@
 package com.pendyliu.lesson18;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -15,6 +14,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.*
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+
+import javax.sql.DataSource;
 
 
 /**
@@ -80,7 +81,9 @@ public class OAuth2Configuration {
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-            super.configure(endpoints);
+            endpoints.
+                    tokenStore(tokenStore()).
+                    authenticationManager(authenticationManager);
         }
 
         @Bean
@@ -94,7 +97,7 @@ public class OAuth2Configuration {
 
         @Override
         public void setEnvironment(Environment environment) {
-
+            this.propertyResolver = new RelaxedPropertyResolver(environment, ENV_OAUTH);
         }
     }
 }
