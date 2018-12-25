@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -29,6 +30,7 @@ public class PendyUserDetailService implements UserDetailsService {
     UserJpa userJpa;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         String lowercaselogin = login.toLowerCase();
         User userFromDatabase = userJpa.findusernameCaseInsensitive(lowercaselogin);
@@ -41,7 +43,9 @@ public class PendyUserDetailService implements UserDetailsService {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getName());
             grantedAuthorities.add(grantedAuthority);
         }
-        return new org.springframework.security.core.userdetails.User(userFromDatabase.getUsername(),
-                userFromDatabase.getPassword(),grantedAuthorities);
+        return new org.springframework.security.core.userdetails.User(
+                userFromDatabase.getUsername(),
+                userFromDatabase.getPassword(),
+                grantedAuthorities);
     }
 }
